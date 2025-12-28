@@ -24,7 +24,7 @@ namespace HTCG.Toolbox.Editor
                 bt_ImageToPrefab.clicked += () =>
                 {
                     int result = UnityUtil.ImageToPrefab();
-                    MainViewModel.Ins.StateInfo = result > 0 ? $"鎴愬姛鐢熸垚 {result} 涓鍒朵欢" : "鏈�変腑鏈夋晥鍥剧墖";
+                    MainViewModel.Ins.StateInfo = result > 0 ? $"成功生成 {result} 个预制件" : "未选中有效图片";
                 };
             }
 

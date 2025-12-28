@@ -6,24 +6,24 @@ using UnityEditor.UIElements;
 namespace HTCG.Toolbox.Editor
 {
     /// <summary>
-    /// å·¥å…·ç®±çª—å£ç±»ï¼Œç»§æ‰¿è‡ª EditorWindowï¼Œç”¨äºåˆ›å»ºè‡ªå®šä¹‰ç¼–è¾‘å™¨çª—å£
+    /// ¹¤¾ßÏä´°¿ÚÀà£¬¼Ì³Ğ×Ô EditorWindow£¬ÓÃÓÚ´´½¨×Ô¶¨Òå±à¼­Æ÷´°¿Ú
     /// </summary>
     public class MainView : EditorWindow
     {
         /// <summary>
-        /// åŒ…è·¯å¾„
+        /// °üÂ·¾¶
         /// </summary>
         private const string PackagePath = "Packages/com.htcg.toolbox";
 
         /// <summary>
-        /// MenuItem åœ¨ä¸»èœå•æ åˆ›å»ºèœå•é¡¹ï¼Œç‚¹å‡»æ—¶è°ƒç”¨æ­¤æ–¹æ³•
+        /// MenuItem ÔÚÖ÷²Ëµ¥À¸´´½¨²Ëµ¥Ïî£¬µã»÷Ê±µ÷ÓÃ´Ë·½·¨
         /// </summary>
-        [MenuItem("HTCG/å·¥å…·ç®±")]
+        [MenuItem("HTCG/¹¤¾ßÏä")]
         public static void ShowWindow()
         {
-            // è·å–çª—å£å®ä¾‹
+            // »ñÈ¡´°¿ÚÊµÀı
             var window = GetWindow<MainView>();
-            window.titleContent = new GUIContent($"å·¥å…·ç®±");
+            window.titleContent = new GUIContent($"¹¤¾ßÏä");
         }
 
         private void OnEnable()
@@ -32,33 +32,33 @@ namespace HTCG.Toolbox.Editor
         }
 
         /// <summary>
-        /// å½“ç¼–è¾‘å™¨çª—å£åˆ›å»º UI æ—¶è°ƒç”¨
+        /// µ±±à¼­Æ÷´°¿Ú´´½¨ UI Ê±µ÷ÓÃ
         /// </summary>
         public void CreateGUI()
         {
             try
             {
-                // åŠ¨æ€åŠ è½½
+                // ¶¯Ì¬¼ÓÔØ
                 string uxmlPath = $"{PackagePath}/Editor/MainView.uxml";
                 var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(uxmlPath);
 
                 if (visualTree == null)
                 {
-                    throw new System.Exception($"æœªæ‰¾åˆ° UXML æ–‡ä»¶\n{uxmlPath}");
+                    throw new System.Exception($"Î´ÕÒµ½ UXML ÎÄ¼ş\n{uxmlPath}");
                 }
 
-                // å®ä¾‹åŒ– UXML
+                // ÊµÀı»¯ UXML
                 VisualElement root = visualTree.Instantiate();
 
-                // æ·»åŠ åˆ°æ ¹å…ƒç´ 
+                // Ìí¼Óµ½¸ùÔªËØ
                 rootVisualElement.Add(root);
 
                 root.Bind(new SerializedObject(MainViewModel.Ins));
 
                 // ==========
                 var tabControl = root.Q<UI.TabControl>("TabControl");
-                tabControl.AddTab("å›¾ç‰‡", new ImageView(PackagePath));
-                tabControl.AddTab("æ¸…ç†", new CleanView(PackagePath));
+                tabControl.AddTab("Í¼Æ¬", new ImageView(PackagePath));
+                tabControl.AddTab("ÇåÀí", new CleanView(PackagePath));
 
             }
             catch (System.Exception ex)

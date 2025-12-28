@@ -1,24 +1,24 @@
-/* ä» UXML å®ä¾‹åŒ–çš„æœ€å¤–å±‚å®¹å™¨ */
+/* ´Ó UXML ÊµÀı»¯µÄ×îÍâ²ãÈİÆ÷ */
 TemplateContainer {
     flex-grow: 1;
     background-color: #222;
 }
 
 * {
-     /* è¿‡æ¸¡ */
+     /* ¹ı¶É */
     transition-property: background-color, border-left-color, color, scale;
     transition-duration: 0.25s;
     transition-timing-function: ease-out-cubic;
 }
 
-/* ä¸»å®¹å™¨ */
+/* Ö÷ÈİÆ÷ */
 .MainView {
     flex-grow: 1;
     flex-direction: column;
     padding: 3px 0px;
 }
 
-/* æŒ‰é’®é€šç”¨æ ·å¼ */
+/* °´Å¥Í¨ÓÃÑùÊ½ */
 Button {
     background-color: #555;
     color: white;
@@ -26,7 +26,7 @@ Button {
     padding: 6px;
     border-radius: 6px;
 }
-/* é¼ æ ‡æ‚¬åœ */
+/* Êó±êĞüÍ£ */
 Button:hover {
     background-color: #444;
 }
@@ -37,20 +37,20 @@ Button:active {
 .tab-content {
     background-color: #333;
 }
-/* å¯¼èˆªæŒ‰é’® */
+/* µ¼º½°´Å¥ */
 .tab-button {
     padding: 2px 12px;
     background-color: #333;
     color: #EEE;
 }
-/* æ‚¬åœå’Œé€‰ä¸­çš„çŠ¶æ€ */
+/* ĞüÍ£ºÍÑ¡ÖĞµÄ×´Ì¬ */
 .tab-button:hover,
 .tab-button.active {
     background-color: #444;
     color: white;
 }
 
-/* æ»šåŠ¨æ¡ */
+/* ¹ö¶¯Ìõ */
 Scroller {
     width: 8px;
 }

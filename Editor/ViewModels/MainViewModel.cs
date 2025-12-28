@@ -35,19 +35,19 @@ namespace HTCG.Toolbox.Editor
             {
                 if (_ins == null)
                 {
-                    // å°è¯•ä»å†…å­˜ä¸­è·å–
+                    // ³¢ÊÔ´ÓÄÚ´æÖĞ»ñÈ¡
                     //_ins = Resources.FindObjectsOfTypeAll<MainViewModel>().FirstOrDefault();
                     if (_ins == null)
                     {
                         _ins = ScriptableObject.CreateInstance<MainViewModel>();
-                        // ä¸æ˜¾ç¤ºåœ¨å±‚çº§è§†å›¾ä¸­ï¼Œä¸ä¿å­˜åˆ°åœºæ™¯ä¸­ï¼Œä¹Ÿä¸é€šè¿‡ Resources.UnloadUnusedAssets å¸è½½
+                        // ²»ÏÔÊ¾ÔÚ²ã¼¶ÊÓÍ¼ÖĞ£¬²»±£´æµ½³¡¾°ÖĞ£¬Ò²²»Í¨¹ı Resources.UnloadUnusedAssets Ğ¶ÔØ
                         //_ins.hideFlags = HideFlags.HideAndDontSave;
 
-                        Debug.Log("åˆ›å»º MainViewModel");
+                        Debug.Log("´´½¨ MainViewModel");
                     }
                     else
                     {
-                        Debug.Log("ä» Resources ä¸­è·å– MainViewModel");
+                        Debug.Log("´Ó Resources ÖĞ»ñÈ¡ MainViewModel");
                     }
                 }
                 return _ins;
@@ -55,7 +55,7 @@ namespace HTCG.Toolbox.Editor
         }
 
         /// <summary>
-        /// çŠ¶æ€ä¿¡æ¯
+        /// ×´Ì¬ĞÅÏ¢
         /// </summary>
         [SerializeField]
         public string StateInfo = DateTime.Now.ToString();

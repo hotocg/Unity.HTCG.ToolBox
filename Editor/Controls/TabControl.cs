@@ -9,7 +9,7 @@ namespace HTCG.Toolbox.Editor.UI
     public class TabControl : VisualElement
     {
         /// <summary>
-        /// å…¬å¼€åˆ° uxml
+        /// ¹«¿ªµ½ uxml
         /// </summary>
         public class UxamlFactory : UxmlFactory<TabControl> { }
 
@@ -17,7 +17,7 @@ namespace HTCG.Toolbox.Editor.UI
         private VisualElement TabContent = new VisualElement();
 
         /// <summary>
-        /// ç¼“å­˜è§†å›¾
+        /// »º´æÊÓÍ¼
         /// </summary>
         private Dictionary<string, VisualElement> ViewCache = new Dictionary<string, VisualElement>();
 
@@ -25,8 +25,8 @@ namespace HTCG.Toolbox.Editor.UI
         private VisualElement CurrentView;
 
         /// <summary>
-        /// æœ€åä¸€æ¬¡æ‰“å¼€çš„æ ‡ç­¾
-        /// <para>æ³¨å†Œè¡¨è·¯å¾„ HKEY_CURRENT_USER\SOFTWARE\Unity Technologies\Unity Editor 5.x</para>
+        /// ×îºóÒ»´Î´ò¿ªµÄ±êÇ©
+        /// <para>×¢²á±íÂ·¾¶ HKEY_CURRENT_USER\SOFTWARE\Unity Technologies\Unity Editor 5.x</para>
         /// </summary>
         public string LastTab
         {
@@ -50,7 +50,7 @@ namespace HTCG.Toolbox.Editor.UI
         }
 
         /// <summary>
-        /// æ·»åŠ æ ‡ç­¾
+        /// Ìí¼Ó±êÇ©
         /// </summary>
         /// <param name="name"></param>
         /// <param name="content"></param>
@@ -79,13 +79,13 @@ namespace HTCG.Toolbox.Editor.UI
         }
 
         /// <summary>
-        /// åˆ‡æ¢è§†å›¾
+        /// ÇĞ»»ÊÓÍ¼
         /// </summary>
         private void SwitchTab(Button bt)
         {
             if (bt == CurrentButton) return;
 
-            // æŒ‰é’®é«˜äº®
+            // °´Å¥¸ßÁÁ
             CurrentButton?.RemoveFromClassList("active");
             bt.AddToClassList("active");
             CurrentButton = bt;
@@ -94,17 +94,17 @@ namespace HTCG.Toolbox.Editor.UI
             {
                 if (CurrentView != null) CurrentView.style.display = DisplayStyle.None;
 
-                // æ˜¾ç¤ºè§†å›¾
+                // ÏÔÊ¾ÊÓÍ¼
                 CurrentView = nextView;
                 CurrentView.style.display = DisplayStyle.Flex;
 
-                // é€æ˜åº¦åŠ¨ç”»
+                // Í¸Ã÷¶È¶¯»­
                 CurrentView.style.opacity = 0;
                 CurrentView.experimental.animation.Start(new StyleValues { opacity = 1f }, 250);
             }
             else
             {
-                ShowMsg.Error($"æœªæ‰¾åˆ°è§†å›¾ï¼š{bt.name}\n{string.Join("\n", ViewCache.Select(x => $"{x.Key} {x.Value.GetType()}"))}");
+                ShowMsg.Error($"Î´ÕÒµ½ÊÓÍ¼£º{bt.name}\n{string.Join("\n", ViewCache.Select(x => $"{x.Key} {x.Value.GetType()}"))}");
             }
 
             LastTab = bt.name;

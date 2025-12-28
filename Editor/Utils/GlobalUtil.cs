@@ -17,54 +17,54 @@ namespace HTCG.Toolbox.Editor
         {
             return EditorUtility.DisplayDialog(title, message, ok, cancel);
         }
-        public static void Info(params object[] args) => Show(Format(args), "æç¤º", "ç¡®è®¤", null);
+        public static void Info(params object[] args) => Show(Format(args), "ÌáÊ¾", "È·ÈÏ", null);
 
-        public static void Warning(params object[] args) => Show(Format(args), "è­¦å‘Š", "ç¡®è®¤", null);
+        public static void Warning(params object[] args) => Show(Format(args), "¾¯¸æ", "È·ÈÏ", null);
 
-        public static void Error(params object[] args) => Show(Format(args), "é”™è¯¯", "ç¡®è®¤", null);
+        public static void Error(params object[] args) => Show(Format(args), "´íÎó", "È·ÈÏ", null);
 
-        public static bool Query(params object[] args) => Show(Format(args), "ç¡®è®¤æ“ä½œ", "ç¡®è®¤", "å–æ¶ˆ");
+        public static bool Query(params object[] args) => Show(Format(args), "È·ÈÏ²Ù×÷", "È·ÈÏ", "È¡Ïû");
     }
 
     public class UnityUtil
     {
-        [MenuItem("Assets/HTCG ToolBox/å°†å›¾ç‰‡è½¬ä¸ºé¢„åˆ¶ä»¶", false, 1)]
+        [MenuItem("Assets/HTCG ToolBox/½«Í¼Æ¬×ªÎªÔ¤ÖÆ¼ş", false, 1)]
         /// <summary>
-        /// å›¾ç‰‡è½¬é¢„åˆ¶ä»¶
+        /// Í¼Æ¬×ªÔ¤ÖÆ¼ş
         /// </summary>
         public static int ImageToPrefab()
         {
-            // ä»å½“å‰é€‰ä¸­çš„èµ„æºä¸­è·å–æ‰€æœ‰ç±»å‹ä¸º Texture2D çš„èµ„æº
+            // ´Óµ±Ç°Ñ¡ÖĞµÄ×ÊÔ´ÖĞ»ñÈ¡ËùÓĞÀàĞÍÎª Texture2D µÄ×ÊÔ´
             Object[] selection = Selection.GetFiltered(typeof(Texture2D), SelectionMode.Assets);
             int count = 0;
 
             foreach (var obj in selection)
             {
-                // è·å–å›¾ç‰‡åœ¨ Assets ä¸­çš„ç›¸å¯¹è·¯å¾„
+                // »ñÈ¡Í¼Æ¬ÔÚ Assets ÖĞµÄÏà¶ÔÂ·¾¶
                 string assetPath = AssetDatabase.GetAssetPath(obj);
-                // è·å–æŒ‡å®šè·¯å¾„ç¬¬ä¸€ä¸ªç±»å‹ä¸º Sprite çš„èµ„äº§å¯¹è±¡
+                // »ñÈ¡Ö¸¶¨Â·¾¶µÚÒ»¸öÀàĞÍÎª Sprite µÄ×Ê²ú¶ÔÏó
                 Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
                 if (sprite == null) continue;
 
-                // åœ¨å†…å­˜ä¸­åˆ›å»ºä¸€ä¸ª GameObjectï¼Œä»¥å›¾ç‰‡åå‘½å
+                // ÔÚÄÚ´æÖĞ´´½¨Ò»¸ö GameObject£¬ÒÔÍ¼Æ¬ÃûÃüÃû
                 GameObject go = new GameObject(obj.name);
-                // ç»™å¯¹è±¡æ·»åŠ  SpriteRenderer ç»„ä»¶ï¼Œå¹¶èµ‹å€¼ Sprite
+                // ¸ø¶ÔÏóÌí¼Ó SpriteRenderer ×é¼ş£¬²¢¸³Öµ Sprite
                 go.AddComponent<SpriteRenderer>().sprite = sprite;
 
-                // è·å–å›¾ç‰‡æ‰€åœ¨çš„æ–‡ä»¶å¤¹ç›®å½•è·¯å¾„
+                // »ñÈ¡Í¼Æ¬ËùÔÚµÄÎÄ¼ş¼ĞÄ¿Â¼Â·¾¶
                 string dir = Path.GetDirectoryName(assetPath);
-                // ç”Ÿæˆä¸€ä¸ªå”¯ä¸€çš„èµ„äº§è·¯å¾„ï¼ˆå¦‚æœåŒåä¼šè‡ªåŠ¨åŠ ä¸Š 1, 2 ç­‰åç¼€ï¼‰
+                // Éú³ÉÒ»¸öÎ¨Ò»µÄ×Ê²úÂ·¾¶£¨Èç¹ûÍ¬Ãû»á×Ô¶¯¼ÓÉÏ 1, 2 µÈºó×º£©
                 string prefabPath = AssetDatabase.GenerateUniqueAssetPath($"{dir}/{obj.name}.prefab");
 
-                // åˆ›å»ºé¢„åˆ¶ä»¶
+                // ´´½¨Ô¤ÖÆ¼ş
                 PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
-                // é”€æ¯ä¸´æ—¶å¯¹è±¡
+                // Ïú»ÙÁÙÊ±¶ÔÏó
                 Object.DestroyImmediate(go);
 
                 count++;
             }
 
-            // åˆ·æ–°èµ„æºæ•°æ®åº“ï¼ˆProject è§†å›¾ï¼‰
+            // Ë¢ĞÂ×ÊÔ´Êı¾İ¿â£¨Project ÊÓÍ¼£©
             AssetDatabase.Refresh();
 
             return count;
