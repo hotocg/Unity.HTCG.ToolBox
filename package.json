@@ -1,0 +1,18 @@
+{
+    "name": "com.htcg.toolbox",
+    "version": "1.0.0",
+    "displayName": "HTCG Toolbox",
+    "description": "好好学习，天天向上！",
+    "unity": "2019.1",
+    "dependencies": {},
+    "keywords": [
+        "htcg",
+        "editor",
+        "tools"
+    ],
+    "author": {
+        "name": "HTCG",
+        "email": "526986494@qq.com",
+        "url": "https://github.com/hotocg"
+    }
+}

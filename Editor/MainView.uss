@@ -1,0 +1,62 @@
+/* 从 UXML 实例化的最外层容器 */
+TemplateContainer {
+    flex-grow: 1;
+    background-color: #222;
+}
+
+* {
+     /* 过渡 */
+    transition-property: background-color, border-left-color, color, scale;
+    transition-duration: 0.25s;
+    transition-timing-function: ease-out-cubic;
+}
+
+/* 主容器 */
+.MainView {
+    flex-grow: 1;
+    flex-direction: column;
+    padding: 3px 0px;
+}
+
+/* 按钮通用样式 */
+Button {
+    background-color: #555;
+    color: white;
+    border-width: 0;
+    padding: 6px;
+    border-radius: 6px;
+}
+/* 鼠标悬停 */
+Button:hover {
+    background-color: #444;
+}
+Button:active {
+    background-color: #555;
+}
+
+.tab-content {
+    background-color: #333;
+}
+/* 导航按钮 */
+.tab-button {
+    padding: 2px 12px;
+    background-color: #333;
+    color: #EEE;
+}
+/* 悬停和选中的状态 */
+.tab-button:hover,
+.tab-button.active {
+    background-color: #444;
+    color: white;
+}
+
+/* 滚动条 */
+Scroller {
+    width: 8px;
+}
+Scroller RepeatButton {
+    width: 5px;
+}
+Scroller #unity-dragger {
+    width: 5px;
+}
