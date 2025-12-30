@@ -1,7 +1,6 @@
 /* 从 UXML 实例化的最外层容器 */
 TemplateContainer {
     flex-grow: 1;
-    background-color: #222;
 }
 
 * {
@@ -13,6 +12,7 @@ TemplateContainer {
 
 /* 主容器 */
 .MainView {
+    background-color: #222;
     flex-grow: 1;
     flex-direction: column;
     padding: 3px 0px;

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:engine="UnityEngine.UIElements"
+    xmlns:editor="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
+>
+    <engine:VisualElement style="flex-grow: 1;">
+        <engine:VisualElement style="flex-direction: row; justify-content: flex-end;">
+            <engine:Button name="bt_QueryProp" text="查询" style="flex-grow: 1; padding: 0px;"/>
+            <engine:Button name="bt_GoBack" text="返回" style="padding: 5px 20px;"/>
+        </engine:VisualElement>
+
+        <engine:ListView name="list_PropInfo" 
+                selection-type="Multiple" 
+                style="flex-grow: 1; border-width: 1px; border-color: #252525; margin: 5px; background-color: #303030;" />
+
+    </engine:VisualElement>
+</engine:UXML>

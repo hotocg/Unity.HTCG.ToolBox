@@ -1,6 +1,11 @@
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using System.Text;
 using UnityEditor;
+using UnityEditor.U2D.Sprites;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace HTCG.Toolbox.Editor
 {
@@ -24,6 +29,56 @@ namespace HTCG.Toolbox.Editor
         public static void Error(params object[] args) => Show(Format(args), "错误", "确认", null);
 
         public static bool Query(params object[] args) => Show(Format(args), "确认操作", "确认", "取消");
+    }
+
+    public static class ViewExtensions
+    {
+        /// <summary>
+        /// 路径缓存
+        /// </summary>
+        private static readonly Dictionary<System.Type, string> PathCache = new();
+        /// <summary>
+        /// 获取 UXML 文件路径
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static string GetUxmlPath(this VisualElement obj)
+        {
+            var type = obj.GetType();
+            if (PathCache.TryGetValue(type, out string cachedPath)) return cachedPath;
+
+            var guids = AssetDatabase.FindAssets($"t:MonoScript {type.Name}");
+            if (guids.Length > 0)
+            {
+                var scriptPath = AssetDatabase.GUIDToAssetPath(guids[0]);
+                var uxmlPath = Path.ChangeExtension(scriptPath, ".uxml");
+                PathCache[type] = uxmlPath;
+                return uxmlPath;
+            }
+            return null;
+        }
+        /// <summary>
+        /// 初始化视觉树
+        /// </summary>
+        /// <param name="obj"></param>
+        public static void InitVisualTree(this VisualElement obj)
+        {
+            var uxmlPath = obj.GetUxmlPath();
+            var ussPath = Path.ChangeExtension(uxmlPath, ".uss");
+            if (string.IsNullOrEmpty(uxmlPath)) return;
+
+            var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(uxmlPath);
+            var style = AssetDatabase.LoadAssetAtPath<StyleSheet>(ussPath);
+            if (visualTree != null)
+            {
+                visualTree.CloneTree(obj);
+                if (style != null) obj.styleSheets.Add(style);
+            }
+            else
+            {
+                throw new System.Exception($"未找到 UXML 文件: {uxmlPath}");
+            }
+        }
     }
 
     public class UnityUtil
@@ -69,5 +124,153 @@ namespace HTCG.Toolbox.Editor
 
             return count;
         }
+
+        public static void ImageGridSplit()
+        {
+            Object[] selection = Selection.GetFiltered(typeof(Texture2D), SelectionMode.Assets);
+            foreach (var obj in selection)
+            {
+                string assetPath = AssetDatabase.GetAssetPath(obj);
+                var importer = AssetImporter.GetAtPath(assetPath);
+                if (importer is TextureImporter texImporter)
+                {
+                    texImporter.textureType = TextureImporterType.Sprite;
+                    texImporter.spriteImportMode = SpriteImportMode.Multiple;
+
+                    // 初始化
+                    var factory = new SpriteDataProviderFactories();
+                    factory.Init();
+
+                    // 获取数据提供者
+                    var dataProvider = factory.GetSpriteEditorDataProviderFromObject(texImporter);
+                    dataProvider.InitSpriteEditorDataProvider();
+
+                    // 计算并设置切片
+                    var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
+                    float w = texture.width / 3f;
+                    float h = texture.height / 3f;
+
+                    var newRects = new SpriteRect[9];
+                    for (int i = 0; i < 9; i++)
+                    {
+                        int x = i % 3;
+                        int y = i / 3;
+                        newRects[i] = new SpriteRect
+                        {
+                            name = $"{texture.name}_{i}",
+                            rect = new Rect(x * w, (2 - y) * h, w, h),
+                            alignment = SpriteAlignment.Center,
+                            pivot = new Vector2(0.5f, 0.5f),
+                            spriteID = GUID.Generate()
+                        };
+                    }
+
+                    // 设置和应用
+                    dataProvider.SetSpriteRects(newRects);
+                    dataProvider.Apply();
+
+                    // 写入并重导
+                    texImporter.SaveAndReimport();
+                }
+            }
+        }
+
+        public static List<string> GetObjAllProperties()
+        {
+            List<string> list = new List<string>();
+
+            UnityEngine.Object obj = Selection.activeObject;
+            if (obj == null)
+            {
+                MainViewModel.Ins.StateInfo = "请选择一个对象";
+                return list;
+            }
+
+            var tabStr = new string('-', 25);
+
+            // 对象
+            list.Add($"{tabStr} [Object: {obj}]");
+            GetReflectionInfo(obj, list);
+
+            Debug.Log(EditorJsonUtility.ToJson(obj, true));
+
+            // 场景对象
+            if (obj is GameObject gObj)
+            {
+                // 遍历组件
+                Component[] components = gObj.GetComponents<Component>();
+                foreach (var comp in components)
+                {
+                    if (comp == null) continue;
+
+                    list.Add($"{tabStr} [Component: {comp.GetType().Name}]");
+                    GetReflectionInfo(comp, list);
+                    list.Add("");
+
+                    Debug.Log(EditorJsonUtility.ToJson(comp, true));
+                }
+            }
+
+            // 资产对象
+            string path = AssetDatabase.GetAssetPath(obj);
+            if (!string.IsNullOrEmpty(path))
+            {
+                AssetImporter importer = AssetImporter.GetAtPath(path);
+                if (importer != null && importer != obj)
+                {
+                    list.Add($"{tabStr} [AssetImporter: {importer.GetType().Name}]");
+                    list.Add($"Path: {path}");
+                    GetReflectionInfo(importer, list);
+
+                    Debug.Log(EditorJsonUtility.ToJson(importer, true));
+                }
+            }
+
+            return list;
+        }
+
+        private static void GetReflectionInfo(object obj, List<string> list, int depth = 0, string prefix = "")
+        {
+            try
+            {
+                // 限制递归深度
+                if (obj == null || depth > 3) return;
+
+                // 跳过基础类型
+                System.Type type = obj.GetType();
+                if (type.IsPrimitive || type == typeof(string) || type == typeof(Vector3) || type == typeof(Color)) return;
+
+                PropertyInfo[] props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                foreach (var p in props)
+                {
+                    if (typeof(UnityEngine.Object).IsAssignableFrom(p.PropertyType)) continue;
+
+                    if (p.DeclaringType == typeof(Matrix4x4))
+                    {
+                        list.Add($"{list.Count} | continue | {p}");
+                        continue;
+                    }
+
+                    try
+                    {
+                        object value = p.GetValue(obj, null);
+                        string indent = new string(' ', depth * 4); // 缩进
+
+                        list.Add($"{list.Count} | {indent}{prefix}{p.Name} = {value ?? "null"} | [{p.PropertyType.Name}]");
+
+                        GetReflectionInfo(value, list, depth + 1, p.Name + ".");
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.Log($"[Reflection] {ex}");
+            }
+        }
+
     }
 }

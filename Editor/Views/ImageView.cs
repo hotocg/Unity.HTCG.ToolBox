@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -8,15 +10,11 @@ namespace HTCG.Toolbox.Editor
 {
     public class ImageView : VisualElement
     {
-        public ImageView(string packagePath)
+        public ImageView()
         {
-            this.Bind(new SerializedObject(MainViewModel.Ins));
+            this.InitVisualTree();
 
-            var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>($"{packagePath}/Editor/Views/ImageView.uxml");
-            if (visualTree != null)
-            {
-                visualTree.CloneTree(this);
-            }
+            this.Bind(new SerializedObject(MainViewModel.Ins));
 
             var bt_ImageToPrefab = this.Q<Button>("bt_ImageToPrefab");
             if (bt_ImageToPrefab != null)
@@ -25,6 +23,15 @@ namespace HTCG.Toolbox.Editor
                 {
                     int result = UnityUtil.ImageToPrefab();
                     MainViewModel.Ins.StateInfo = result > 0 ? $"成功生成 {result} 个预制件" : "未选中有效图片";
+                };
+            }
+
+            var bt_ImageGridSplit = this.Q<Button>("bt_ImageGridSplit");
+            if (bt_ImageGridSplit != null)
+            {
+                bt_ImageGridSplit.clicked += () =>
+                {
+                    UnityUtil.ImageGridSplit();
                 };
             }
 

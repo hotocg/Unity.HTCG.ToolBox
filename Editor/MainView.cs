@@ -13,7 +13,7 @@ namespace HTCG.Toolbox.Editor
         /// <summary>
         /// 包路径
         /// </summary>
-        private const string PackagePath = "Packages/com.htcg.toolbox";
+        public const string PackagePath = "Packages/com.htcg.toolbox";
 
         /// <summary>
         /// MenuItem 在主菜单栏创建菜单项，点击时调用此方法
@@ -23,7 +23,7 @@ namespace HTCG.Toolbox.Editor
         {
             // 获取窗口实例
             var window = GetWindow<MainView>();
-            window.titleContent = new GUIContent($"工具箱");
+            window.titleContent = new GUIContent($"HTCG 工具箱");
         }
 
         private void OnEnable()
@@ -48,17 +48,16 @@ namespace HTCG.Toolbox.Editor
                 }
 
                 // 实例化 UXML
-                VisualElement root = visualTree.Instantiate();
+                visualTree.CloneTree(rootVisualElement);
 
-                // 添加到根元素
-                rootVisualElement.Add(root);
-
-                root.Bind(new SerializedObject(MainViewModel.Ins));
+                rootVisualElement.Bind(new SerializedObject(MainViewModel.Ins));
 
                 // ==========
-                var tabControl = root.Q<UI.TabControl>("TabControl");
-                tabControl.AddTab("图片", new ImageView(PackagePath));
-                tabControl.AddTab("清理", new CleanView(PackagePath));
+                var tabControl = rootVisualElement.Q<UI.TabControl>("TabControl");
+                tabControl.AddTab("图片", new ImageView());
+                tabControl.AddTab("清理", new CleanView());
+                tabControl.AddTab("开发", new DevView());
+
 
             }
             catch (System.Exception ex)

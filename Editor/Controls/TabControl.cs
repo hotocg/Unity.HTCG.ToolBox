@@ -65,6 +65,7 @@ namespace HTCG.Toolbox.Editor.UI
                 bt.clicked += () => SwitchTab(bt);
 
                 content.style.display = DisplayStyle.None;
+                content.style.flexGrow = 1;
 
                 TabItems.Add(bt);
                 TabContent.Add(content);

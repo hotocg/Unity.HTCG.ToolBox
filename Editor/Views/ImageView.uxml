@@ -5,10 +5,12 @@
     xmlns:editor="UnityEditor.UIElements"
 >
     <engine:VisualElement>
-        <engine:Button name="bt_ImageToPrefab" text="选择 Sprite 点击生成预制件 (Prefab)" style="height: 40px; background-color: #2c5d87; color: white;margin-bottom: 10px;" />
+        <engine:Button name="bt_ImageToPrefab" text="选择 Sprite 点击生成预制件 (Prefab)" />
+        <engine:Button name="bt_ImageGridSplit" text="选择 Texture2D 网格拆分" />
 
-        <engine:Button name="bt_Test" text="123"/>
+        <engine:Button name="bt_Test" text="数据绑定测试"/>
         <engine:TextField label="测试 1" binding-path="PlayerScore" />
         <engine:TextField label="测试 2" text="" binding-path="PlayerName"/>
+        
     </engine:VisualElement>
 </engine:UXML>

@@ -7,13 +7,9 @@ namespace HTCG.Toolbox.Editor
 {
     public class CleanView : VisualElement
     {
-        public CleanView(string packagePath)
+        public CleanView()
         {
-            var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>($"{packagePath}/Editor/Views/CleanView.uxml");
-            if (visualTree != null)
-            {
-                visualTree.CloneTree(this);
-            }
+            this.InitVisualTree();
 
             var bt_Clean = this.Q<Button>("bt_Clean");
             if (bt_Clean != null)
