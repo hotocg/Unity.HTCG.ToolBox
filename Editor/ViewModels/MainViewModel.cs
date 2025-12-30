@@ -64,7 +64,7 @@ namespace HTCG.Toolbox.Editor
         public int PlayerScore = 999;
 
         [SerializeField]
-        public string PlayerName = "123456";
+        public string PlayerName = "abcdefg";
 
     }
 }

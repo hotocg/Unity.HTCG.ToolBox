@@ -81,40 +81,67 @@ namespace HTCG.Toolbox.Editor
         }
     }
 
-    public class UnityUtil
+    public static class UnityUtil
     {
-        [MenuItem("Assets/HTCG ToolBox/将图片转为预制件", false, 1)]
         /// <summary>
-        /// 图片转预制件
+        /// 获取当前资源窗口所在的目录
         /// </summary>
-        public static int ImageToPrefab()
+        /// <returns></returns>
+        private static string GetCurrentAssetPath()
         {
-            // 从当前选中的资源中获取所有类型为 Texture2D 的资源
-            Object[] selection = Selection.GetFiltered(typeof(Texture2D), SelectionMode.Assets);
+            string path = "Assets";
+
+            var projectBrowserType = typeof(UnityEditor.EditorWindow).Assembly.GetType("UnityEditor.ProjectBrowser");
+            var projectBrowser = EditorWindow.GetWindow(projectBrowserType);
+
+            if (projectBrowser != null)
+            {
+                var getActiveFolderPath = projectBrowserType.GetMethod("GetActiveFolderPath", BindingFlags.Instance | BindingFlags.NonPublic);
+                path = getActiveFolderPath.Invoke(projectBrowser, null).ToString();
+            }
+
+            return path;
+        }
+
+        /// <summary>
+        /// 把当前选择的物体转为预制件
+        /// </summary>
+        /// <returns></returns>
+        public static int ToPrefab()
+        {
+            Object[] selection = Selection.objects;
             int count = 0;
 
             foreach (var obj in selection)
             {
-                // 获取图片在 Assets 中的相对路径
+                Debug.Log(obj);
                 string assetPath = AssetDatabase.GetAssetPath(obj);
-                // 获取指定路径第一个类型为 Sprite 的资产对象
-                Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
-                if (sprite == null) continue;
 
-                // 在内存中创建一个 GameObject，以图片名命名
-                GameObject go = new GameObject(obj.name);
-                // 给对象添加 SpriteRenderer 组件，并赋值 Sprite
-                go.AddComponent<SpriteRenderer>().sprite = sprite;
-
-                // 获取图片所在的文件夹目录路径
-                string dir = Path.GetDirectoryName(assetPath);
-                // 生成一个唯一的资产路径（如果同名会自动加上 1, 2 等后缀）
-                string prefabPath = AssetDatabase.GenerateUniqueAssetPath($"{dir}/{obj.name}.prefab");
-
-                // 创建预制件
-                PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
-                // 销毁临时对象
-                Object.DestroyImmediate(go);
+                if (string.IsNullOrEmpty(assetPath))
+                {
+                    // 场景
+                    if (obj is GameObject sceneObj)
+                    {
+                        CreatePrefabFromSceneObj(sceneObj);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    // 资源
+                    if (obj is Texture2D tex)
+                    {
+                        if (!CreatePrefabFromTexture(tex)) continue;
+                    }
+                    else
+                    {
+                        Debug.Log($"其他类型，未处理: {obj}");
+                        continue;
+                    }
+                }
 
                 count++;
             }
@@ -123,6 +150,47 @@ namespace HTCG.Toolbox.Editor
             AssetDatabase.Refresh();
 
             return count;
+        }
+
+        /// <summary>
+        /// 场景对象转预制件
+        /// </summary>
+        /// <param name="obj"></param>
+        public static void CreatePrefabFromSceneObj(GameObject obj)
+        {
+            string localPath = $"{GetCurrentAssetPath()}/{obj.name}.prefab";
+            localPath = AssetDatabase.GenerateUniqueAssetPath(localPath);
+            PrefabUtility.SaveAsPrefabAsset(obj, localPath);
+        }
+
+        //[MenuItem("Assets/HTCG ToolBox/将图片转为预制件", false, 1)]
+        /// <summary>
+        /// 纹理对象转预制件
+        /// </summary>
+        public static bool CreatePrefabFromTexture(Texture2D tex)
+        {
+            // 获取图片在 Assets 中的相对路径
+            string assetPath = AssetDatabase.GetAssetPath(tex);
+            // 获取指定路径第一个类型为 Sprite 的对象
+            Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+            if (sprite == null) return false;
+
+            // 在内存中创建一个 GameObject，以图片名命名
+            GameObject go = new GameObject(tex.name);
+            // 给对象添加 SpriteRenderer 组件，并赋值 Sprite
+            go.AddComponent<SpriteRenderer>().sprite = sprite;
+
+            // 获取图片所在的文件夹目录路径
+            string dir = Path.GetDirectoryName(assetPath);
+            // 生成一个唯一的资产路径（同名会自动加后缀）
+            string prefabPath = AssetDatabase.GenerateUniqueAssetPath($"{dir}/{tex.name}.prefab");
+
+            // 创建预制件
+            PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
+            // 销毁临时对象
+            Object.DestroyImmediate(go);
+
+            return true;
         }
 
         public static void ImageGridSplit()
@@ -179,7 +247,7 @@ namespace HTCG.Toolbox.Editor
         {
             List<string> list = new List<string>();
 
-            UnityEngine.Object obj = Selection.activeObject;
+            var obj = Selection.activeObject;
             if (obj == null)
             {
                 MainViewModel.Ins.StateInfo = "请选择一个对象";
@@ -187,6 +255,10 @@ namespace HTCG.Toolbox.Editor
             }
 
             var tabStr = new string('-', 25);
+            string path = AssetDatabase.GetAssetPath(obj);
+
+            list.Add($"[Is GameObject] {obj is GameObject}");
+            list.Add($"[AssetPath] {path}");
 
             // 对象
             list.Add($"{tabStr} [Object: {obj}]");
@@ -212,7 +284,6 @@ namespace HTCG.Toolbox.Editor
             }
 
             // 资产对象
-            string path = AssetDatabase.GetAssetPath(obj);
             if (!string.IsNullOrEmpty(path))
             {
                 AssetImporter importer = AssetImporter.GetAtPath(path);

@@ -5,8 +5,8 @@
     xmlns:editor="UnityEditor.UIElements"
 >
     <engine:VisualElement>
-        <engine:Button name="bt_ImageToPrefab" text="选择 Sprite 点击生成预制件 (Prefab)" />
-        <engine:Button name="bt_ImageGridSplit" text="选择 Texture2D 网格拆分" />
+        <engine:Button name="bt_ImageToPrefab" text="场景对象或 Sprite 纹理生成预制件 (Prefab)" />
+        <engine:Button name="bt_ImageGridSplit" text="Texture2D 网格 3x3 拆分" />
 
         <engine:Button name="bt_Test" text="数据绑定测试"/>
         <engine:TextField label="测试 1" binding-path="PlayerScore" />

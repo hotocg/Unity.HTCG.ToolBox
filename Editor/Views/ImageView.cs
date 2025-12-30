@@ -21,8 +21,8 @@ namespace HTCG.Toolbox.Editor
             {
                 bt_ImageToPrefab.clicked += () =>
                 {
-                    int result = UnityUtil.ImageToPrefab();
-                    MainViewModel.Ins.StateInfo = result > 0 ? $"成功生成 {result} 个预制件" : "未选中有效图片";
+                    int result = UnityUtil.ToPrefab();
+                    MainViewModel.Ins.StateInfo = result > 0 ? $"成功生成 {result} 个预制件" : "未选中有效对象";
                 };
             }
 
