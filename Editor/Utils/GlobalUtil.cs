@@ -378,18 +378,20 @@ namespace HTCG.Toolbox.Editor
         {
             // 非播放模式下才执行
             if (EditorApplication.isPlayingOrWillChangePlaymode) return;
-            Debug.Log("Check Update ...");
+            //Debug.Log("Check Update ...");
 
-            var request = UnityWebRequest.Get(RemotePackageUrl);
-            var operation = request.SendWebRequest();
-            
             LocalPackageInfo = UnityEditor.PackageManager.PackageInfo.FindForPackageName(PackageName);
             if (LocalPackageInfo == null)
             {
                 Debug.Log("无法获取包信息");
                 return;
             }
+            // 获取本地版本号
+            string localVersion = LocalPackageInfo.version;
+            MainViewModel.Ins.Version = localVersion;
 
+            var request = UnityWebRequest.Get(RemotePackageUrl);
+            var operation = request.SendWebRequest();
             operation.completed += _ =>
             {
                 if (request.result != UnityWebRequest.Result.Success)
@@ -401,10 +403,6 @@ namespace HTCG.Toolbox.Editor
                 // 获取远程版本号
                 string remoteJson = request.downloadHandler.text;
                 string remoteVersion = ParseVersion(remoteJson);
-
-                // 获取本地版本号
-                string localVersion = LocalPackageInfo.version;
-                MainViewModel.Ins.Version = localVersion;
 
                 // 对比版本
                 var isNewer = IsNewer(remoteVersion, localVersion);
