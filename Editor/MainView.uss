@@ -28,7 +28,7 @@ TemplateContainer {
 
 #Statusbar * {
     font-size: 10px;
-    background-color: trnasparent;
+    background-color: transparent;
     color: #DDD;
 }
 
@@ -39,7 +39,7 @@ TemplateContainer {
     /* cursor: link; */
 }
 #Statusbar Button:hover {
-    color: DodgerBlue;
+    color: dodgerblue;
 }
 
 /* 按钮通用样式 */
