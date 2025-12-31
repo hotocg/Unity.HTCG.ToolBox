@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using System.Linq;
 
 namespace HTCG.Toolbox.Editor
 {
@@ -21,13 +22,17 @@ namespace HTCG.Toolbox.Editor
         [MenuItem("HTCG/工具箱")]
         public static void ShowWindow()
         {
+            var window = Resources.FindObjectsOfTypeAll<MainView>().FirstOrDefault();
+            if (window != null) window.Close();
+
             // 获取窗口实例
-            var window = GetWindow<MainView>();
+            window = GetWindow<MainView>();
             window.titleContent = new GUIContent($"HTCG 工具箱");
         }
 
         private void OnEnable()
         {
+            PackageManager.CheckUpdate();
 
         }
 
@@ -67,7 +72,6 @@ namespace HTCG.Toolbox.Editor
                         PackageManager.UpdateToolbox();
                     }
                 };
-                PackageManager.CheckUpdate();
 
 
             }
