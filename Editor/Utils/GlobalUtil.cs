@@ -7,7 +7,6 @@ using UnityEditor.U2D.Sprites;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Networking;
-using Codice.CM.Common.Serialization.Replication;
 
 namespace HTCG.Toolbox.Editor
 {
@@ -378,7 +377,7 @@ namespace HTCG.Toolbox.Editor
         {
             // 非播放模式下才执行
             if (EditorApplication.isPlayingOrWillChangePlaymode) return;
-            //Debug.Log("Check Update ...");
+            MainViewModel.Ins.StateInfo = "Check Update ...";
 
             LocalPackageInfo = UnityEditor.PackageManager.PackageInfo.FindForPackageName(PackageName);
             if (LocalPackageInfo == null)
@@ -425,6 +424,9 @@ namespace HTCG.Toolbox.Editor
                     //    });
                     //}
                 }
+
+                MainViewModel.Ins.StateInfo = System.DateTime.Now.ToString();
+
             };
         }
 

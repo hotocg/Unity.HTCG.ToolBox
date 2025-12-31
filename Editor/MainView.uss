@@ -36,6 +36,10 @@ TemplateContainer {
     margin: 0px;
     margin-left: auto;
     padding: 0px;
+    /* cursor: link; */
+}
+#Statusbar Button:hover {
+    color: DodgerBlue;
 }
 
 /* 按钮通用样式 */
