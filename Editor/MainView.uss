@@ -18,6 +18,26 @@ TemplateContainer {
     padding: 3px 0px;
 }
 
+/* 状态栏 */
+#Statusbar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 4px;
+}
+
+#Statusbar * {
+    font-size: 10px;
+    background-color: trnasparent;
+    color: #DDD;
+}
+
+#Statusbar Button {
+    margin: 0px;
+    margin-left: auto;
+    padding: 0px;
+}
+
 /* 按钮通用样式 */
 Button {
     background-color: #555;

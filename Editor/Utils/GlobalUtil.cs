@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using UnityEditor;
+using UnityEditor.PackageManager;
 using UnityEditor.U2D.Sprites;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.Networking;
+using Codice.CM.Common.Serialization.Replication;
 
 namespace HTCG.Toolbox.Editor
 {
@@ -333,7 +335,7 @@ namespace HTCG.Toolbox.Editor
                     }
                     catch
                     {
-
+                        
                     }
                 }
             }
@@ -343,5 +345,137 @@ namespace HTCG.Toolbox.Editor
             }
         }
 
+    }
+
+    /// <summary>
+    /// 包管理
+    /// <para>[InitializeOnLoad] 在 Unity 加载时以及脚本重新编译时初始化类</para>
+    /// </summary>
+    [InitializeOnLoad]
+    public class PackageManager
+    {
+        public const string RemotePackageUpdateUrl = "https://github.com/hotocg/Unity.HTCG.ToolBox.git";
+        public const string RemotePackageUrl = "https://raw.githubusercontent.com/hotocg/Unity.HTCG.ToolBox/master/package.json";
+        public const string PackageName = "com.htcg.toolbox";
+
+        public static UnityEditor.PackageManager.PackageInfo LocalPackageInfo;
+        private class RemotePackageInfo
+        {
+            public string name;
+            public string version;
+        }
+
+        static PackageManager()
+        {
+
+        }
+
+        /// <summary>
+        /// 检测更新
+        /// </summary>
+        /// <param name="callback"></param>
+        public static void CheckUpdate(System.Action<bool> callback = null)
+        {
+            // 非播放模式下才执行
+            if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+            Debug.Log("Check Update ...");
+
+            var request = UnityWebRequest.Get(RemotePackageUrl);
+            var operation = request.SendWebRequest();
+            
+            LocalPackageInfo = UnityEditor.PackageManager.PackageInfo.FindForPackageName(PackageName);
+            if (LocalPackageInfo == null)
+            {
+                Debug.Log("无法获取包信息");
+                return;
+            }
+
+            operation.completed += _ =>
+            {
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    Debug.LogError("无法连接到 GitHub 检测更新: " + request.error);
+                    return;
+                }
+
+                // 获取远程版本号
+                string remoteJson = request.downloadHandler.text;
+                string remoteVersion = ParseVersion(remoteJson);
+
+                // 获取本地版本号
+                string localVersion = LocalPackageInfo.version;
+                MainViewModel.Ins.Version = localVersion;
+
+                // 对比版本
+                var isNewer = IsNewer(remoteVersion, localVersion);
+                callback?.Invoke(isNewer);
+
+                if (isNewer)
+                {
+                    MainViewModel.Ins.Version = "新版本！";
+                    //if (PackageInfo.source == PackageSource.Local)
+                    //{
+                    //    Debug.Log(JsonUtility.ToJson(PackageInfo, true));
+                    //    return; // 本地包不提示
+                    //}
+
+                    //if (EditorUtility.DisplayDialog("检测更新", $"发现新版本！{remoteVersion}\n是否现在更新？", "立即更新", "稍后再说"))
+                    //{
+                    //    UpdateToolbox(() =>
+                    //    {
+                    //        MainViewModel.Ins.Version = remoteVersion;
+                    //    });
+                    //}
+                }
+            };
+        }
+
+        /// <summary>
+        /// 更新工具箱
+        /// </summary>
+        /// <param name="callback"></param>
+        public static void UpdateToolbox(System.Action callback = null)
+        {
+            if (!EditorUtility.DisplayDialog("检测更新", "是否立即更新？", "确认", "取消")) return;
+            var request = Client.Add(RemotePackageUpdateUrl);
+
+            EditorApplication.CallbackFunction handler = null;
+            handler = () =>
+            {
+                // 任务是否完成
+                if (request.IsCompleted)
+                {
+                    EditorApplication.update -= handler;
+                    // 是否成功
+                    if (request.Status == StatusCode.Success)
+                    {
+                        Debug.Log($"更新完成 {request.Result.displayName} {request.Result.version}");
+                        callback?.Invoke();
+                    }
+                }
+            };
+
+            EditorApplication.update += handler;
+        }
+
+        private static string ParseVersion(string json)
+        {
+            try 
+            {
+                var data = JsonUtility.FromJson<RemotePackageInfo>(json);
+                return !string.IsNullOrEmpty(data.version) ? data.version : "0.0.0";
+            }
+            catch
+            {
+                return "0.0.0";
+            }
+        }
+
+        private static bool IsNewer(string remote, string local)
+        {
+            System.Version vRemote = new System.Version(remote);
+            System.Version vLocal = new System.Version(local);
+            return vRemote > vLocal;
+        }
     }
 }

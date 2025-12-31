@@ -43,13 +43,14 @@ namespace HTCG.Toolbox.Editor
                         // 不显示在层级视图中，不保存到场景中，也不通过 Resources.UnloadUnusedAssets 卸载
                         //_ins.hideFlags = HideFlags.HideAndDontSave;
 
-                        Debug.Log("创建 MainViewModel");
+                        //Debug.Log("Create MainViewModel");
                     }
                     else
                     {
-                        Debug.Log("从 Resources 中获取 MainViewModel");
+                        Debug.Log("Find MainViewModel");
                     }
                 }
+
                 return _ins;
             }
         }
@@ -59,6 +60,9 @@ namespace HTCG.Toolbox.Editor
         /// </summary>
         [SerializeField]
         public string StateInfo = DateTime.Now.ToString();
+
+        [SerializeField]
+        public string Version = "0.0.0";
 
         [SerializeField]
         public int PlayerScore = 999;

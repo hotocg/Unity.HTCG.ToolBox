@@ -10,6 +10,9 @@
     <engine:VisualElement class="MainView">
         <ui:TabControl name="TabControl" />
 
-        <engine:Label name="StateInfo" style="font-size: 10px; margin: 5px" binding-path="StateInfo"/>
+        <engine:VisualElement name="Statusbar">
+            <engine:Label binding-path="StateInfo" />
+            <engine:Button name="bt_CheckUpdate" binding-path="Version"/>
+        </engine:VisualElement>
     </engine:VisualElement>
 </engine:UXML>

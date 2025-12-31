@@ -59,6 +59,17 @@ namespace HTCG.Toolbox.Editor
                 tabControl.AddTab("开发", new DevView());
 
 
+                var bt_CheckUpdate = rootVisualElement.Q<Button>("bt_CheckUpdate");
+                bt_CheckUpdate.clicked += () =>
+                {
+                    if (bt_CheckUpdate.text.Contains("新版本"))
+                    {
+                        PackageManager.UpdateToolbox();
+                    }
+                };
+                PackageManager.CheckUpdate();
+
+
             }
             catch (System.Exception ex)
             {
