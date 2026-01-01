@@ -7,6 +7,7 @@ using UnityEditor.U2D.Sprites;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Networking;
+using System.Runtime.CompilerServices;
 
 namespace HTCG.Toolbox.Editor
 {
@@ -37,7 +38,7 @@ namespace HTCG.Toolbox.Editor
         /// <summary>
         /// 路径缓存
         /// </summary>
-        private static readonly Dictionary<System.Type, string> PathCache = new();
+        private static readonly Dictionary<string, string> PathCache = new();
         /// <summary>
         /// 获取 UXML 文件路径
         /// </summary>
@@ -46,15 +47,18 @@ namespace HTCG.Toolbox.Editor
         public static string GetUxmlPath(this VisualElement obj)
         {
             var type = obj.GetType();
-            if (PathCache.TryGetValue(type, out string cachedPath)) return cachedPath;
+            if (PathCache.TryGetValue(type.Name, out string cachedPath)) return cachedPath;
 
             var guids = AssetDatabase.FindAssets($"t:MonoScript {type.Name}");
-            if (guids.Length > 0)
+            foreach (var guid in guids)
             {
-                var scriptPath = AssetDatabase.GUIDToAssetPath(guids[0]);
-                var uxmlPath = Path.ChangeExtension(scriptPath, ".uxml");
-                PathCache[type] = uxmlPath;
-                return uxmlPath;
+                var scriptPath = AssetDatabase.GUIDToAssetPath(guid);
+                if (Path.GetFileNameWithoutExtension(scriptPath) == type.Name)
+                {
+                    var uxmlPath = Path.ChangeExtension(scriptPath, ".uxml");
+                    PathCache[type.Name] = uxmlPath;
+                    return uxmlPath;
+                }
             }
             return null;
         }
@@ -62,9 +66,12 @@ namespace HTCG.Toolbox.Editor
         /// 初始化视觉树
         /// </summary>
         /// <param name="obj"></param>
-        public static void InitVisualTree(this VisualElement obj)
+        public static void InitVisualTree(this VisualElement obj, [CallerFilePath] string fileName = "")
         {
+            //var uxmlPath = Path.ChangeExtension(fileName, ".uxml");
+            //Debug.Log($"{fileName} {uxmlPath}");
             var uxmlPath = obj.GetUxmlPath();
+
             var ussPath = Path.ChangeExtension(uxmlPath, ".uss");
             if (string.IsNullOrEmpty(uxmlPath)) return;
 
@@ -194,7 +201,7 @@ namespace HTCG.Toolbox.Editor
             return true;
         }
 
-        public static void ImageGridSplit()
+        public static void ImageGridSplit(Vector2Int cellCount, PivotPosition cellPivot)
         {
             Object[] selection = Selection.GetFiltered(typeof(Texture2D), SelectionMode.Assets);
             foreach (var obj in selection)
@@ -205,6 +212,7 @@ namespace HTCG.Toolbox.Editor
                 {
                     texImporter.textureType = TextureImporterType.Sprite;
                     texImporter.spriteImportMode = SpriteImportMode.Multiple;
+                    //texImporter.SaveAndReimport();
 
                     // 初始化
                     var factory = new SpriteDataProviderFactories();
@@ -214,28 +222,40 @@ namespace HTCG.Toolbox.Editor
                     var dataProvider = factory.GetSpriteEditorDataProviderFromObject(texImporter);
                     dataProvider.InitSpriteEditorDataProvider();
 
-                    // 计算并设置切片
-                    var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
-                    float w = texture.width / 3f;
-                    float h = texture.height / 3f;
+                    //var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
+                    //var actualWidth = texture.width;
+                    //var actualHeight = texture.height;
+                    //var textureName = texture.name;
 
-                    var newRects = new SpriteRect[9];
-                    for (int i = 0; i < 9; i++)
+                    var textureProvider = dataProvider.GetDataProvider<ITextureDataProvider>();
+                    textureProvider.GetTextureActualWidthAndHeight(out int actualWidth, out int actualHeight);
+                    var textureName = textureProvider.texture.name;
+
+                    // 计算并设置切片
+                    float cellW = (float)actualWidth / cellCount.x;
+                    float cellH = (float)actualHeight / cellCount.y;
+
+                    var newRects = new List<SpriteRect>();
+                    for (int row = 0; row < cellCount.y; row++)
                     {
-                        int x = i % 3;
-                        int y = i / 3;
-                        newRects[i] = new SpriteRect
+                        for (int col = 0; col < cellCount.x; col++)
                         {
-                            name = $"{texture.name}_{i}",
-                            rect = new Rect(x * w, (2 - y) * h, w, h),
-                            alignment = SpriteAlignment.Center,
-                            pivot = new Vector2(0.5f, 0.5f),
-                            spriteID = GUID.Generate()
-                        };
+                            float xPos = col * cellW;
+                            float yPos = ((cellCount.y - 1) - row) * cellH; // Unity 的纹理坐标系 (0,0) 在左下角，row = 0 是最上面一行，所以需要反转（笛卡尔坐标系，直角坐标系）
+
+                            newRects.Add(new SpriteRect
+                            {
+                                name = $"{textureName}_{row}_{col}",
+                                rect = new Rect(xPos, yPos, cellW, cellH),
+                                alignment = SpriteAlignment.Custom,
+                                pivot = cellPivot.ToVector2(),
+                                spriteID = GUID.Generate()
+                            });
+                        }
                     }
 
                     // 设置和应用
-                    dataProvider.SetSpriteRects(newRects);
+                    dataProvider.SetSpriteRects(newRects.ToArray());
                     dataProvider.Apply();
 
                     // 写入并重导

@@ -1,3 +1,24 @@
 Button {
     margin: 2px;
+    flex-shrink: 0;
+}
+
+.Split {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.unity-vector2-int-field {
+    flex-grow: 1;
+    height: 20px;
+}
+
+.unity-base-field__input {
+}
+
+EnumField {
+    width: 150px;
+}
+.unity-enum-field__label {
+    min-width: auto;
 }

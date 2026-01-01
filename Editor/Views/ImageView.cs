@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static HTCG.Toolbox.Editor.ImageViewModel;
 
 namespace HTCG.Toolbox.Editor
 {
@@ -13,8 +14,7 @@ namespace HTCG.Toolbox.Editor
         public ImageView()
         {
             this.InitVisualTree();
-
-            this.Bind(new SerializedObject(MainViewModel.Ins));
+            this.Bind(new SerializedObject(ImageViewModel.Ins));
 
             var bt_ImageToPrefab = this.Q<Button>("bt_ImageToPrefab");
             if (bt_ImageToPrefab != null)
@@ -26,12 +26,21 @@ namespace HTCG.Toolbox.Editor
                 };
             }
 
+            //var em_SelectCellPivot = this.Q<EnumField>("em_SelectCellPivot");
+            //em_SelectCellPivot.Init(ImageViewModel.PivotPosition.Center);
+            //em_SelectCellPivot.value = ImageViewModel.PivotPosition.Center;
+            //em_SelectCellPivot.RegisterValueChangedCallback(evt =>
+            //{
+            //    PivotPosition selected = (PivotPosition)evt.newValue;
+            //    Debug.Log($"—°‘Ò¡À: {selected}");
+            //});
+
             var bt_ImageGridSplit = this.Q<Button>("bt_ImageGridSplit");
             if (bt_ImageGridSplit != null)
             {
                 bt_ImageGridSplit.clicked += () =>
                 {
-                    UnityUtil.ImageGridSplit();
+                    UnityUtil.ImageGridSplit(ImageViewModel.Ins.SplitCellCount, ImageViewModel.Ins.SelectCellPivot);
                 };
             }
 
@@ -40,8 +49,8 @@ namespace HTCG.Toolbox.Editor
             {
                 bt_Test.clicked += () =>
                 {
-                    MainViewModel.Ins.PlayerName = GUID.Generate().ToString();
-                    MainViewModel.Ins.PlayerScore = new System.Random().Next();
+                    ImageViewModel.Ins.PlayerName = GUID.Generate().ToString();
+                    ImageViewModel.Ins.PlayerScore = new System.Random().Next();
                 };
             }
         }
