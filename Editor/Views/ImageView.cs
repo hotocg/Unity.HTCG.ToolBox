@@ -38,10 +38,11 @@ namespace HTCG.Toolbox.Editor
             var bt_ImageGridSplit = this.Q<Button>("bt_ImageGridSplit");
             if (bt_ImageGridSplit != null)
             {
-                bt_ImageGridSplit.clicked += () =>
+                bt_ImageGridSplit.RegisterCallback<ClickEvent>((evt) =>
                 {
-                    UnityUtil.ImageGridSplit(ImageViewModel.Ins.SplitCellCount, ImageViewModel.Ins.SelectCellPivot);
-                };
+                    var OnlyPivot = evt.modifiers == EventModifiers.Shift;
+                    UnityUtil.ImageGridSplit(ImageViewModel.Ins.SplitCellCount, ImageViewModel.Ins.SelectCellPivot, OnlyPivot);
+                });
             }
 
             var bt_Test = this.Q<Button>("bt_Test");

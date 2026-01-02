@@ -10,7 +10,7 @@
         <engine:VisualElement class="Split">
             <engine:Vector2IntField binding-path="SplitCellCount" tooltip="x: 列  y: 行"/>
             <engine:EnumField label="轴心" name="em_SelectCellPivot" binding-path="SelectCellPivot"/>
-            <engine:Button name="bt_ImageGridSplit" text="Texture2D 网格拆分" />
+            <engine:Button name="bt_ImageGridSplit" text="Texture2D 网格拆分" tooltip="长按 Shift 仅设置轴心" />
         </engine:VisualElement>
 
         <engine:Button name="bt_Test" text="数据绑定测试"/>

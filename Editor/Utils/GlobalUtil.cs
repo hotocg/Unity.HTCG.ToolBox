@@ -201,9 +201,15 @@ namespace HTCG.Toolbox.Editor
             return true;
         }
 
-        public static void ImageGridSplit(Vector2Int cellCount, PivotPosition cellPivot)
+        public static void ImageGridSplit(Vector2Int cellCount, PivotPosition cellPivot, bool OnlyPivot)
         {
             Object[] selection = Selection.GetFiltered(typeof(Texture2D), SelectionMode.Assets);
+            if (selection.Length == 0)
+            {
+                MainViewModel.Ins.StateInfo = "未选择对象";
+                return;
+            }
+
             foreach (var obj in selection)
             {
                 string assetPath = AssetDatabase.GetAssetPath(obj);
@@ -221,6 +227,23 @@ namespace HTCG.Toolbox.Editor
                     // 获取数据提供者
                     var dataProvider = factory.GetSpriteEditorDataProviderFromObject(texImporter);
                     dataProvider.InitSpriteEditorDataProvider();
+
+                    // 仅设置锚点
+                    if (OnlyPivot)
+                    {
+                        var spriteRects = dataProvider.GetSpriteRects();
+
+                        foreach (var rect in spriteRects)
+                        {
+                            rect.alignment = SpriteAlignment.Custom;
+                            rect.pivot = cellPivot.ToVector2();
+                        }
+
+                        dataProvider.SetSpriteRects(spriteRects);
+                        dataProvider.Apply();
+                        texImporter.SaveAndReimport();
+                        continue;
+                    }
 
                     //var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
                     //var actualWidth = texture.width;
